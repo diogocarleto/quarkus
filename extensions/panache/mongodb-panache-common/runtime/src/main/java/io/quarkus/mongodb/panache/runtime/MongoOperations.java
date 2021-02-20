@@ -119,8 +119,6 @@ public abstract class MongoOperations<QueryType, UpdateType> {
         if (versionHandler.containsVersionAnnotation() && updateResult.getModifiedCount() == 0) {
             throwOptimisticLockException(entity);
         }
-            throwOptimisticLockException(entity);
-        }
     }
 
     public void update(Iterable<?> entities) {
