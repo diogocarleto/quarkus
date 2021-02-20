@@ -110,13 +110,15 @@ public abstract class MongoOperations<QueryType, UpdateType> {
     }
 
     public void update(Object entity) {
-        VersionHandler versionUtil = VersionHandler.of(entity);
+        VersionHandler versionHandler = VersionHandler.of(entity);
         MongoCollection collection = operations.mongoCollection(entity.getClass());
         BsonDocument query = buildUpdateQuery(entity);
 
-        versionUtil.adjustVersionValue();
+        versionHandler.adjustVersionValue();
         UpdateResult updateResult = collection.replaceOne(query, entity);
-        if (updateResult.getModifiedCount() == 0) {
+        if (versionHandler.containsVersionAnnotation() && updateResult.getModifiedCount() == 0) {
+            throwOptimisticLockException(entity);
+        }
             throwOptimisticLockException(entity);
         }
     }
